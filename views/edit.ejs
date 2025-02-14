@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Post</title>
+</head>
+<body> //
+    <h2>Edit your Post</h2>
+    <p>Post id: <%=post.id%></p>
+    <p>Post username: @<%=post.username%> </p>
+    <form method="POST" action="/posts/<%=post.id%>?_method=PATCH">
+        <textarea name="content"><%=post.content%></textarea>
+        <button>Submit</button>
+    </form>
+</body>
+</html>
+
+<!-- /*We can send only get or post req using html forms
+so we use npm i method-override  (it will convert/replace some req
+to another)
+Lets you use HTTP verbs such as PUT or DELETE in places 
+where the client doesn't support it.
+
+Syntax:  ?_method=PATCH
+        const methodOverride=require("method-override");
+        app.use(methodOverride("_method"));
+
+in our example POST will get converted to PATCH request
+*/-->
+ 

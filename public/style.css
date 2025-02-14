@@ -1,0 +1,56 @@
+
+h1{
+    color:#780C28;
+}
+
+.post{
+    background-color:#CAE0BC;
+}
+.user{
+    font-style: italic;
+}/* Base Button Styles */
+button, a {
+    display: inline-block;
+    padding: 8px 12px;
+    font-size: 14px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+}
+
+/* Primary Action Buttons */
+button, a[href*="new"], a[href*="edit"] {
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+
+button:hover, a[href*="new"]:hover, a[href*="edit"]:hover {
+    background-color: #122e13;
+}
+
+/* Delete Button */
+form[action*="DELETE"] button {
+    background-color: #9f0707;
+    color: white;
+}
+
+form[action*="DELETE"] button:hover {
+    background-color: #e63939;
+}
+
+/* Detail View Button */
+a[href*="/posts/"]:not([href*="edit"]):not([href*="new"]) {
+    background-color: #2d342c;
+    color: white;
+}
+
+a[href*="/posts/"]:not([href*="edit"]):not([href*="new"]):hover {
+    background-color: #7beac7;
+}
+
+/* Button Spacing */
+a, button {
+    margin: 4px;
+}
