@@ -1,93 +1,76 @@
 const express = require("express");
-const  app=express();
-const port=3000;
-const path=require("path");
-app.use(express.static(path.join(__dirname,"public")));
-app.use(express.urlencoded({extended:true}));
-app.set("view engine","ejs");
-app.set("views",path.join(__dirname,"views"));
-const methodOverride=require("method-override");
+const path = require("path");
+const methodOverride = require("method-override");
+const { v4: uuidv4 } = require("uuid");
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
-const { v4: uuidv4 } = require('uuid');
-// ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
-
-let posts=[
-    {   
-        id:uuidv4(),
-        username:"Riya",
-        content:"This is my most fav quote I wanna share with y'all... Where there’s a will, there’s a way.",
-    },
-    {
-        id:uuidv4(),
-        username:"Rohan",
-        content:"If you want to lift yourself up, lift up someone else.’ – Booker T. Washington"
-    },
-    {   
-        id:uuidv4(),
-        username:"Saanvi",
-        content:"Sharing this because it’s so true! ‘Do what you feel in your heart to be right – for you’ll be criticized anyway.’ – Eleanor Roosevelt"
-    },
-    {
-        id:uuidv4(),
-        username:"Aarav",
-        content:"Success is not final, failure is not fatal: it is the courage to continue that counts. – Winston Churchill"
-   
-    }
+// Sample Data
+let posts = [
+    { id: uuidv4(), username: "Riya", content: "Where there’s a will, there’s a way." },
+    { id: uuidv4(), username: "Rohan", content: "Lift up someone else. - Booker T. Washington" },
+    { id: uuidv4(), username: "Saanvi", content: "Do what you feel is right. - Eleanor Roosevelt" },
+    { id: uuidv4(), username: "Aarav", content: "Success is not final. - Winston Churchill" }
 ];
 
-app.get("/posts",(req,res)=>{
-    res.render("index",{posts});
+// Redirect root to /posts to avoid 404 errors
+app.get("/", (req, res) => {
+    res.redirect("/posts");
 });
 
-app.get("/posts/new",(req,res)=>{
-    res.render("new.ejs");
+// Read - Show all posts
+app.get("/posts", (req, res) => {
+    res.render("index", { posts });
 });
 
-
-app.post("/posts",(req,res)=>{
-    let {username,content}=req.body;
-    let id=uuidv4();
-    posts.push({id,username,content});
-   res.redirect("/posts");
+// Create - Form for new post
+app.get("/posts/new", (req, res) => {
+    res.render("new");
 });
 
-//SHOW
-app.get("/posts/:id",(req,res)=>{
-    let {id}=req.params;
-    let post=posts.find((p)=>id===p.id);
-    res.render("show.ejs",{post});
+// Create - Add new post
+app.post("/posts", (req, res) => {
+    let { username, content } = req.body;
+    posts.push({ id: uuidv4(), username, content });
+    res.redirect("/posts");
 });
 
-
-//UPDATE-fully back work
-app.patch("/posts/:id",(req,res)=>{   //patch -to update specific post
-    let {id}=req.params;              //taking the id that user entered
-    let newContent=req.body.content;    //taking the content entered by user from request body 
-    let post=posts.find((p)=>id===p.id);  //find the specific post in array that matches id of current user
-    post.content=newContent;            //uploading newContent
-  res.redirect("/posts");
+// Read - Show single post
+app.get("/posts/:id", (req, res) => {
+    let post = posts.find(p => p.id === req.params.id);
+    if (!post) return res.status(404).send("Post not found");
+    res.render("show", { post });
 });
 
-
-//EDIT-user edits
-app.get("/posts/:id/edit",(req,res)=>{   //will go on this url
-let {id}=req.params;                    
-let post=posts.find((p)=>id===p.id);       //will take id n specific post and go to edit.ejs
-res.render("edit.ejs",{post});          
+// Update - Show edit form
+app.get("/posts/:id/edit", (req, res) => {
+    let post = posts.find(p => p.id === req.params.id);
+    if (!post) return res.status(404).send("Post not found");
+    res.render("edit", { post });
 });
 
-app.delete("/posts/:id",(req,res)=>{  
-    let {id}=req.params;
-     posts=posts.filter((p)=>id!==p.id);
-     res.redirect("/posts");
-    });
-
-app.listen(3000,()=>{
-    console.log(`listening to port ${port}`);
+// Update - Modify post
+app.patch("/posts/:id", (req, res) => {
+    let post = posts.find(p => p.id === req.params.id);
+    if (post) post.content = req.body.content;
+    res.redirect("/posts");
 });
 
+// Delete - Remove post
+app.delete("/posts/:id", (req, res) => {
+    posts = posts.filter(p => p.id !== req.params.id);
+    res.redirect("/posts");
+});
 
-
-
-
+// Start Server
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
